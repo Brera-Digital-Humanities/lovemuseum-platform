@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LoveMuseum API v1</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f6f7f9;
+            --panel: #ffffff;
+            --text: #18202b;
+            --muted: #667085;
+            --line: #d8dde6;
+            --code: #111827;
+            --code-bg: #eef1f5;
+            --accent: #1262b3;
+            --post: #087443;
+            --get: #0b5cad;
+            --patch: #9a5b00;
+            --delete: #b42318;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.5;
+        }
+
+        header {
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+            padding: 32px 24px 24px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        h1, h2, h3 {
+            line-height: 1.2;
+            margin: 0 0 12px;
+        }
+
+        h1 {
+            font-size: 32px;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-top: 32px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        h3 {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        p {
+            margin: 0 0 12px;
+        }
+
+        .lead {
+            color: var(--muted);
+            max-width: 760px;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .pill {
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 6px 10px;
+            background: #fafbfc;
+            font-size: 14px;
+        }
+
+        section {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+
+        th, td {
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid var(--line);
+            padding: 10px;
+        }
+
+        th {
+            background: #f9fafb;
+            font-weight: 700;
+        }
+
+        code {
+            color: var(--code);
+            background: var(--code-bg);
+            border-radius: 4px;
+            padding: 2px 5px;
+            font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+            font-size: 0.95em;
+        }
+
+        pre {
+            overflow: auto;
+            background: #111827;
+            color: #f9fafb;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 13px;
+        }
+
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        .endpoint {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .method {
+            min-width: 64px;
+            border-radius: 4px;
+            padding: 5px 8px;
+            color: #fff;
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .method.get { background: var(--get); }
+        .method.post { background: var(--post); }
+        .method.patch { background: var(--patch); }
+        .method.delete { background: var(--delete); }
+
+        .path {
+            font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+            font-weight: 700;
+        }
+
+        .note {
+            border-left: 4px solid var(--accent);
+            background: #f1f7fd;
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .status {
+            white-space: nowrap;
+            font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <main>
+            <h1>LoveMuseum API v1</h1>
+            <p class="lead">Documentazione degli endpoint per app mobile LoveMuseum: autenticazione utenti, point of interest, foto, commenti, profili social e bookmark.</p>
+            <div class="meta">
+                <span class="pill">Base URL locale: <code>http://localhost:8091</code></span>
+                <span class="pill">Prefix: <code>/api/v1</code></span>
+                <span class="pill">Auth: <code>Authorization: Bearer &lt;token&gt;</code></span>
+            </div>
+        </main>
+    </header>
+
+    <main>
+        <section>
+            <h2>Formato</h2>
+            <p>Le richieste possono essere inviate come form data oppure JSON. Le risposte sono JSON.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Codice</th>
+                        <th>Significato</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status">200</td><td>Operazione completata.</td></tr>
+                    <tr><td class="status">201</td><td>Utente creato.</td></tr>
+                    <tr><td class="status">401</td><td>Credenziali o token non validi.</td></tr>
+                    <tr><td class="status">403</td><td>Operazione non permessa, utente non attivo o registrazioni disabilitate.</td></tr>
+                    <tr><td class="status">422</td><td>Validazione fallita. La risposta contiene <code>errors</code>.</td></tr>
+                    <tr><td class="status">429</td><td>Registrazione limitata dal throttle del plugin User.</td></tr>
+                </tbody>
+            </table>
+            <p class="note">Il campo <code>birth_date</code> usa il formato <code>YYYY-MM-DD</code>. La password minima segue la configurazione di <code>Winter.User</code>.</p>
+        </section>
+
+        <section>
+            <h2>Modello Utente</h2>
+            <p>Le risposte utente derivano da <code>Winter\User\Models\User</code> e rimuovono password, codici di reset/attivazione e persist code.</p>
+            <pre><code>{
+  "id": 1,
+  "name": "Mario",
+  "surname": "Rossi",
+  "username": "mrossi",
+  "email": "mario@example.com",
+  "birth_date": "1990-05-20",
+  "is_activated": true,
+  "groups": ["registered"]
+}</code></pre>
+        </section>
+
+        <section>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/v1/users/check</span>
+            </div>
+            <p>Verifica se <code>username</code> e/o <code>email</code> sono gia presenti.</p>
+            <table>
+                <thead><tr><th>Parametro query</th><th>Obbligo</th><th>Note</th></tr></thead>
+                <tbody>
+                    <tr><td><code>username</code></td><td>Uno tra username/email</td><td>2-255 caratteri.</td></tr>
+                    <tr><td><code>email</code></td><td>Uno tra username/email</td><td>Email valida, 6-255 caratteri.</td></tr>
+                </tbody>
+            </table>
+            <pre><code>curl "http://localhost:8091/api/v1/users/check?username=mrossi&amp;email=mario@example.com"</code></pre>
+            <pre><code>{
+  "username": {"exists": false, "available": true},
+  "email": {"exists": false, "available": true}
+}</code></pre>
+        </section>
+
+        <section>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/v1/users/register</span>
+            </div>
+            <p>Crea un utente frontend usando <code>Auth::register()</code> di <code>Winter.User</code>. Se l'utente non richiede attivazione, restituisce anche un JWT.</p>
+            <table>
+                <thead><tr><th>Campo</th><th>Obbligo</th><th>Regole</th></tr></thead>
+                <tbody>
+                    <tr><td><code>name</code></td><td>Si</td><td>Stringa, 2-255.</td></tr>
+                    <tr><td><code>surname</code></td><td>Si</td><td>Stringa, 2-255.</td></tr>
+                    <tr><td><code>username</code></td><td>Si</td><td>Univoco in <code>users.username</code>.</td></tr>
+                    <tr><td><code>email</code></td><td>Si</td><td>Univoca in <code>users.email</code>.</td></tr>
+                    <tr><td><code>birth_date</code></td><td>Si</td><td><code>YYYY-MM-DD</code>, precedente a oggi.</td></tr>
+                    <tr><td><code>password</code></td><td>Si</td><td>Confermata da <code>password_confirmation</code>.</td></tr>
+                    <tr><td><code>password_confirmation</code></td><td>Si</td><td>Deve combaciare con <code>password</code>.</td></tr>
+                </tbody>
+            </table>
+            <pre><code>curl -X POST http://localhost:8091/api/v1/users/register \
+  -d name="Mario" \
+  -d surname="Rossi" \
+  -d username="mrossi" \
+  -d email="mario@example.com" \
+  -d birth_date="1990-05-20" \
+  -d password="password123" \
+  -d password_confirmation="password123"</code></pre>
+        </section>
+
+        <section>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/v1/users/login</span>
+            </div>
+            <p>Autentica un utente e restituisce un token JWT.</p>
+            <table>
+                <thead><tr><th>Campo</th><th>Obbligo</th><th>Note</th></tr></thead>
+                <tbody>
+                    <tr><td><code>login</code></td><td>Uno tra login/email</td><td>Username o email, in base alla configurazione User.</td></tr>
+                    <tr><td><code>email</code></td><td>Uno tra login/email</td><td>Alternativa a <code>login</code>.</td></tr>
+                    <tr><td><code>password</code></td><td>Si</td><td>Password utente.</td></tr>
+                </tbody>
+            </table>
+            <pre><code>curl -X POST http://localhost:8091/api/v1/users/login \
+  -d login="mario@example.com" \
+  -d password="password123"</code></pre>
+            <pre><code>{
+  "access_token": "eyJ0eXAiOiJKV1Qi...",
+  "token_type": "bearer",
+  "expires_in": 3600,
+  "user": {}
+}</code></pre>
+        </section>
+
+        <section>
+            <h2>Rotte protette</h2>
+            <p>Tutte le rotte seguenti richiedono header <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/users/logged</span></h3>
+            <p>Restituisce il profilo dell'utente autenticato.</p>
+            <pre><code>curl http://localhost:8091/api/v1/users/logged \
+  -H "Authorization: Bearer TOKEN"</code></pre>
+
+            <h3><span class="method patch">PATCH</span> <span class="path">/api/v1/users/profile</span></h3>
+            <p>Modifica i campi profilo. Accetta anche <code>PUT</code>.</p>
+            <table>
+                <thead><tr><th>Campo</th><th>Regole</th></tr></thead>
+                <tbody>
+                    <tr><td><code>name</code></td><td>Stringa, 2-255.</td></tr>
+                    <tr><td><code>surname</code></td><td>Stringa, 2-255.</td></tr>
+                    <tr><td><code>username</code></td><td>Univoco, escluso l'utente corrente.</td></tr>
+                    <tr><td><code>email</code></td><td>Email univoca, escluso l'utente corrente.</td></tr>
+                    <tr><td><code>birth_date</code></td><td><code>YYYY-MM-DD</code>, precedente a oggi.</td></tr>
+                </tbody>
+            </table>
+            <pre><code>curl -X PATCH http://localhost:8091/api/v1/users/profile \
+  -H "Authorization: Bearer TOKEN" \
+  -d name="Mario" \
+  -d surname="Rossi" \
+  -d birth_date="1990-05-20"</code></pre>
+
+            <h3><span class="method post">POST</span> <span class="path">/api/v1/users/refresh</span></h3>
+            <p>Emette un nuovo JWT per l'utente autenticato.</p>
+
+            <h3><span class="method post">POST</span> <span class="path">/api/v1/users/logout</span></h3>
+            <p>Con JWT stateless risponde <code>{"success": true}</code>. Il client deve eliminare il token locale.</p>
+        </section>
+
+        <section>
+            <h2>Password</h2>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/v1/users/password/forgot</span>
+            </div>
+            <p>Invia la mail standard <code>winter.user::mail.restore</code>. Il link usa <code>PASSWORD_RESET_URL</code> se configurato, altrimenti <code>APP_URL/password/reset</code>.</p>
+            <pre><code>curl -X POST http://localhost:8091/api/v1/users/password/forgot \
+  -d email="mario@example.com"</code></pre>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/v1/users/password/reset</span>
+            </div>
+            <p>Imposta una nuova password usando il codice ricevuto via email.</p>
+            <pre><code>curl -X POST http://localhost:8091/api/v1/users/password/reset \
+  -d code="1!RESET_CODE" \
+  -d password="newPassword123" \
+  -d password_confirmation="newPassword123"</code></pre>
+        </section>
+
+        <section>
+            <h2>Point Of Interest</h2>
+            <p>Rotte mock per lo sviluppo dell'app. I bookmark sostituiscono il concetto precedente di saved.</p>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/pois/list?lat=45.4642&amp;lon=9.1900</span></h3>
+            <p>Restituisce 5 musei/monumenti di Milano vicini alle coordinate inviate.</p>
+            <pre><code>{
+  "data": [{
+    "id": 101,
+    "code": "duomo-milano",
+    "name": "Duomo di Milano",
+    "lat": 45.464211,
+    "lon": 9.191383,
+    "distance": 120,
+    "category": {"id": 1, "name_en": "Monument", "name_it": "Monumento"},
+    "descr": "Cattedrale gotica nel centro di Milano, simbolo della citta.",
+    "picture": "https://picsum.photos/seed/lm-duomo/1200/900",
+    "num_pictures": 328,
+    "num_likes": 1420,
+    "num_bookmarks": 284,
+    "num_comments": 96,
+    "last_picture": {},
+    "likes": {"users": []},
+    "comments": {"comments": []},
+    "bookmarks": {"users": []}
+  }]
+}</code></pre>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/pois/categories</span></h3>
+            <p>Lista categorie: <code>id</code>, <code>name_en</code>, <code>name_it</code>.</p>
+
+            <h3><span class="method post">POST</span> <span class="path">/api/v1/pois/create</span></h3>
+            <p>Propone un nuovo luogo. Campi: <code>lat</code>, <code>lon</code>, <code>name</code>, <code>category</code>, <code>descr</code>, <code>picture</code>. Risponde <code>{"status":"OK"}</code> o <code>{"status":"KO"}</code>.</p>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/pois/{id}/view</span></h3>
+            <p>Dettaglio POI con <code>pictures</code>, contatori, <code>days_open</code>, <code>hours_open</code>, <code>tickets_info</code> e <code>booking_info</code>.</p>
+        </section>
+
+        <section>
+            <h2>Pictures</h2>
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/pictures/list</span></h3>
+            <p>Lista ultime immagini pubblicate con oggetti relazionati <code>poi</code> e <code>user</code>, piu <code>likes_num</code>, <code>bookmarks_num</code> e <code>comments_num</code>.</p>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/pictures/{id}/view</span></h3>
+            <p>Dettaglio immagine con <code>likes</code>, <code>comments</code> e <code>bookmarks</code>.</p>
+
+            <h3><span class="method post">POST</span> <span class="path">/api/v1/pictures/create</span></h3>
+            <p>Crea una foto per un <code>poi_id</code>. Campi richiesti: <code>poi_id</code>, <code>picture</code>.</p>
+
+            <h3><span class="method delete">DELETE</span> <span class="path">/api/v1/pictures/{id}/delete</span></h3>
+            <p>Elimina solo se lo user proprietario della foto coincide con l'utente corrente mock.</p>
+        </section>
+
+        <section>
+            <h2>Comments</h2>
+            <p>Ogni commento contiene <code>id</code>, <code>user</code>, <code>comment_text</code>, <code>comment_date</code>, <code>likes_num</code>, <code>likes</code>, <code>comments_num</code> e <code>comments</code> per le risposte.</p>
+
+            <h3><span class="method post">POST</span> <span class="path">/api/v1/comments/{id}/create</span></h3>
+            <p>Crea un commento o una risposta sul target indicato da <code>{id}</code>. Campo richiesto: <code>comment_text</code>.</p>
+
+            <h3><span class="method delete">DELETE</span> <span class="path">/api/v1/comments/{id}/delete</span></h3>
+            <p>Elimina solo se <code>owner_user_id</code> coincide con l'utente corrente mock.</p>
+
+            <h3><span class="method patch">PATCH</span> <span class="path">/api/v1/comments/{id}/update</span></h3>
+            <p>Aggiorna <code>comment_text</code>; accetta anche <code>PUT</code>.</p>
+        </section>
+
+        <section>
+            <h2>Social Users</h2>
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/users/{id}/profile</span></h3>
+            <p>Profilo pubblico con follower, following, contatori commenti, foto, bookmark e badge.</p>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/users/{id}/pictures</span></h3>
+            <p>Foto caricate dall'utente.</p>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/users/my/pictures</span></h3>
+            <p>Foto dell'utente corrente mock.</p>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/users/my/bookmarks</span></h3>
+            <p>Bookmark dell'utente corrente, divisi in POI, foto e cartelle.</p>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/users/my/badges</span></h3>
+            <p>Badge dell'utente corrente, inclusi quelli non ancora completati con <code>progress</code> e <code>target</code>.</p>
+
+            <h3><span class="method post">POST</span> <span class="path">/api/v1/users/folders/create</span></h3>
+            <p>Crea una cartella bookmark. Campo richiesto: <code>name</code>.</p>
+
+            <h3><span class="method patch">PATCH</span> <span class="path">/api/v1/users/folders/{id}/update</span></h3>
+            <p>Modifica il nome di una cartella bookmark; accetta anche <code>PUT</code>.</p>
+
+            <h3><span class="method delete">DELETE</span> <span class="path">/api/v1/users/folders/{id}/delete</span></h3>
+            <p>Elimina una cartella bookmark dell'utente corrente mock.</p>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/users/folders/{id}</span></h3>
+            <p>Restituisce tutti i bookmark contenuti nella cartella.</p>
+        </section>
+
+        <section>
+            <h2>Badges</h2>
+            <p>I badge sono raggruppabili lato app tramite <code>category</code>, come nella schermata "I miei badge".</p>
+            <pre><code>{
+  "id": 801,
+  "code": "beauty-pioneer",
+  "name": "Pioniere della bellezza",
+  "category": "Aggiunta di nuovi posti",
+  "descr": "Per il primo posto aggiunto",
+  "picture": "https://picsum.photos/seed/lm-badge-beauty/320/320",
+  "earned": true,
+  "earned_at": "2026-05-01T10:30:00+02:00",
+  "progress": 1,
+  "target": 1
+}</code></pre>
+
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/badges/list</span></h3>
+            <p>Lista completa dei badge disponibili nell'app.</p>
+        </section>
+
+        <section>
+            <h2>Postman</h2>
+            <p>Importa la collection <code>LoveMuseum_API.postman_collection.json</code> per le rotte utenti e per i mock POI/social.</p>
+            <table>
+                <thead><tr><th>Variabile</th><th>Default</th><th>Uso</th></tr></thead>
+                <tbody>
+                    <tr><td><code>baseUrl</code></td><td><code>http://localhost:8091</code></td><td>Host API.</td></tr>
+                    <tr><td><code>login</code></td><td><code>test@example.com</code></td><td>Login per richiesta Login.</td></tr>
+                    <tr><td><code>password</code></td><td><code>password123</code></td><td>Password per login/register.</td></tr>
+                    <tr><td><code>accessToken</code></td><td>Vuota</td><td>Salvata automaticamente dopo login o register con token.</td></tr>
+                    <tr><td><code>resetCode</code></td><td><code>1!RESET_CODE</code></td><td>Codice reset ricevuto via email.</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>
