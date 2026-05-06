@@ -1,5 +1,5 @@
 services:
-  dbvim:
+  dblm:
     image: mysql:8.4
     container_name: mysql-lm
     restart: unless-stopped
@@ -30,7 +30,7 @@ services:
     container_name: phpmyadmin-lm
     restart: unless-stopped
     environment:
-      - PMA_HOST=dbvim
+      - PMA_HOST=dblm
       - PMA_USER=root
       - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - UPLOAD_LIMIT=256M
@@ -38,7 +38,7 @@ services:
     ports:
       - "8087:80"
     depends_on:
-      dbvim:
+      dblm:
         condition: service_healthy
 
   wintercms:
@@ -52,13 +52,13 @@ services:
       - ./apache/sites-available:/etc/apache2/sites-available
       - ./apache/htpasswd:/etc/apache2/htpasswd
     environment:
-      - DB_HOST=dbvim
+      - DB_HOST=dblm
       - DB_NAME=${MYSQL_DATABASE}
       - DB_USER=${MYSQL_USER}
       - DB_PASS=${MYSQL_PASSWORD}
       - TZ=${TZ}
     depends_on:
-      dbvim:
+      dblm:
         condition: service_healthy
   composer:
     build: ./platform
