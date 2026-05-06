@@ -1,0 +1,5 @@
+1.0.1:
+    - Initialize plugin.
+1.0.2:
+    - Add birth date to frontend users.
+    - users_add_birth_date.php

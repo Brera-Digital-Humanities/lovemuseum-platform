@@ -1,0 +1,6 @@
+plugin:
+    name: 'quivi.poi::lang.plugin.name'
+    description: 'quivi.poi::lang.plugin.description'
+    author: Quivi
+    icon: oc-icon-map-marker
+    homepage: ''
