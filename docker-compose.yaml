@@ -36,7 +36,7 @@ services:
       - UPLOAD_LIMIT=256M
       - TZ=${TZ}
     ports:
-      - "8086:80"
+      - "8087:80"
     depends_on:
       dbvim:
         condition: service_healthy
