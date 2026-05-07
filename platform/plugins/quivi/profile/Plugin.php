@@ -10,7 +10,7 @@ class Plugin extends PluginBase
         User::extend(function ($model) {
             $model->addFillable('birth_date');
             $model->addDateAttribute('birth_date');
-            $model->rules['birth_date'] = 'nullable|date_format:Y-m-d|before:today';
+            $model->rules['birth_date'] = 'nullable|date|before:today';
         });
     }
 

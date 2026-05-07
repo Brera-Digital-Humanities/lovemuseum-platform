@@ -39,7 +39,14 @@ class JwtMiddleware
 
     protected function bearerToken($request): ?string
     {
-        $header = $request->headers->get('Authorization');
+        $header = $request->headers->get('Authorization')
+            ?: $request->server->get('HTTP_AUTHORIZATION')
+            ?: $request->server->get('REDIRECT_HTTP_AUTHORIZATION');
+
+        if (!$header && function_exists('apache_request_headers')) {
+            $headers = apache_request_headers();
+            $header = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+        }
 
         if ($header && preg_match('/^Bearer\s+(.+)$/i', $header, $matches)) {
             return trim($matches[1]);
