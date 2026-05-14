@@ -363,7 +363,7 @@
 
         <section>
             <h2>Point Of Interest</h2>
-            <p>Rotte mock per lo sviluppo dell'app. I bookmark sostituiscono il concetto precedente di saved.</p>
+            <p>Rotte mock per lo sviluppo dell'app. I bookmark sostituiscono il concetto precedente di saved. Ogni POI contiene <code>id</code> e <code>slug</code>; il dettaglio accetta entrambi.</p>
 
             <h3><span class="method get">GET</span> <span class="path">/api/v1/pois/list?lat=45.4642&amp;lon=9.1900</span></h3>
             <p>Restituisce 5 musei/monumenti di Milano vicini alle coordinate inviate.</p>
@@ -371,6 +371,7 @@
   "data": [{
     "id": 101,
     "code": "duomo-milano",
+    "slug": "duomo-milano",
     "name": "Duomo di Milano",
     "lat": 45.464211,
     "lon": 9.191383,
@@ -392,11 +393,14 @@
             <h3><span class="method get">GET</span> <span class="path">/api/v1/pois/categories</span></h3>
             <p>Lista categorie: <code>id</code>, <code>name_en</code>, <code>name_it</code>.</p>
 
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/pois/search?q=duomo</span></h3>
+            <p>Ricerca testuale sui nomi dei POI. Parametro richiesto: <code>q</code>. Risponde con <code>{"data":[...]}</code> usando gli stessi oggetti mock della lista.</p>
+
             <h3><span class="method post">POST</span> <span class="path">/api/v1/pois/create</span></h3>
             <p>Propone un nuovo luogo. Campi: <code>lat</code>, <code>lon</code>, <code>name</code>, <code>category</code>, <code>descr</code>, <code>picture</code>. Risponde <code>{"status":"OK"}</code> o <code>{"status":"KO"}</code>.</p>
 
-            <h3><span class="method get">GET</span> <span class="path">/api/v1/pois/{id}/view</span></h3>
-            <p>Dettaglio POI con <code>pictures</code>, contatori, <code>days_open</code>, <code>hours_open</code>, <code>tickets_info</code> e <code>booking_info</code>.</p>
+            <h3><span class="method get">GET</span> <span class="path">/api/v1/pois/{id|slug}/view</span></h3>
+            <p>Dettaglio POI richiamabile con id numerico, ad esempio <code>101</code>, oppure slug, ad esempio <code>duomo-milano</code>. Include <code>pictures</code>, contatori, <code>days_open</code>, <code>hours_open</code>, <code>tickets_info</code> e <code>booking_info</code>.</p>
         </section>
 
         <section>

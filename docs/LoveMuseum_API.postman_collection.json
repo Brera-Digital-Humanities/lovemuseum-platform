@@ -822,6 +822,54 @@
           "response": []
         },
         {
+          "name": "Search POIs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200 or 422', function () {",
+                  "  pm.expect([200,422]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('response is json', function () {",
+                  "  pm.response.to.be.withBody;",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/pois/search?q={{poiSearch}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "pois",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{poiSearch}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Create POI proposal",
           "event": [
             {
@@ -908,6 +956,49 @@
                 "v1",
                 "pois",
                 "{{poiId}}",
+                "view"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "View POI by slug",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.expect([200]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('response is json', function () {",
+                  "  pm.response.to.be.withBody;",
+                  "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/pois/{{poiSlug}}/view",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "pois",
+                "{{poiSlug}}",
                 "view"
               ]
             }
@@ -1835,6 +1926,16 @@
     {
       "key": "poiId",
       "value": "101",
+      "type": "string"
+    },
+    {
+      "key": "poiSlug",
+      "value": "duomo-milano",
+      "type": "string"
+    },
+    {
+      "key": "poiSearch",
+      "value": "duomo",
       "type": "string"
     },
     {

@@ -178,6 +178,7 @@ function lmMockPois()
         [
             'id' => 101,
             'code' => 'duomo-milano',
+            'slug' => 'duomo-milano',
             'name' => 'Duomo di Milano',
             'lat' => 45.464211,
             'lon' => 9.191383,
@@ -197,6 +198,7 @@ function lmMockPois()
         [
             'id' => 102,
             'code' => 'pinacoteca-brera',
+            'slug' => 'pinacoteca-brera',
             'name' => 'Pinacoteca di Brera',
             'lat' => 45.472026,
             'lon' => 9.188545,
@@ -216,6 +218,7 @@ function lmMockPois()
         [
             'id' => 103,
             'code' => 'castello-sforzesco',
+            'slug' => 'castello-sforzesco',
             'name' => 'Castello Sforzesco',
             'lat' => 45.470476,
             'lon' => 9.179789,
@@ -235,6 +238,7 @@ function lmMockPois()
         [
             'id' => 104,
             'code' => 'museo-novecento',
+            'slug' => 'museo-novecento',
             'name' => 'Museo del Novecento',
             'lat' => 45.463620,
             'lon' => 9.190248,
@@ -254,6 +258,7 @@ function lmMockPois()
         [
             'id' => 105,
             'code' => 'cenacolo-vinciano',
+            'slug' => 'cenacolo-vinciano',
             'name' => 'Cenacolo Vinciano',
             'lat' => 45.465999,
             'lon' => 9.171367,
@@ -289,15 +294,28 @@ function lmMockPois()
     }, $pois);
 }
 
-function lmMockPoi($id)
+function lmMockPoi($identifier)
 {
     foreach (lmMockPois() as $poi) {
-        if ((int) $poi['id'] === (int) $id) {
+        if ((string) $poi['id'] === (string) $identifier || $poi['slug'] === (string) $identifier) {
             return $poi;
         }
     }
 
     return null;
+}
+
+function lmMockSearchPois($query)
+{
+    $query = trim((string) $query);
+
+    if ($query === '') {
+        return [];
+    }
+
+    return array_values(array_filter(lmMockPois(), function ($poi) use ($query) {
+        return stripos($poi['name'], $query) !== false;
+    }));
 }
 
 function lmMockPicture($id)
@@ -346,6 +364,18 @@ Route::group(['prefix' => 'api/v1/pois'], function () {
         ]);
     });
 
+    Route::get('search', function (Request $request) {
+        $validator = Validator::make($request->all(), [
+            'q' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return Response::json(['errors' => $validator->errors()], 422);
+        }
+
+        return Response::json(['data' => lmMockSearchPois($request->input('q'))]);
+    });
+
     Route::post('create', function (Request $request) {
         $validator = Validator::make($request->all(), [
             'lat' => 'required|numeric',
@@ -363,8 +393,8 @@ Route::group(['prefix' => 'api/v1/pois'], function () {
         return Response::json(['status' => 'OK', 'id' => 999], 201);
     });
 
-    Route::get('{id}/view', function ($id) {
-        $poi = lmMockPoi($id);
+    Route::get('{identifier}/view', function ($identifier) {
+        $poi = lmMockPoi($identifier);
 
         if (!$poi) {
             return Response::json(['error' => 'POI not found.'], 404);
