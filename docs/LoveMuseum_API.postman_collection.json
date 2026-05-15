@@ -740,6 +740,13 @@
                   "pm.test('response is json', function () {",
                   "  pm.response.to.be.withBody;",
                   "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test('POIs use culturalSites-compatible fields', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.data).to.be.an('array');",
+                  "  if (json.data.length) {",
+                  "    pm.expect(json.data[0]).to.include.keys('id', 'id_opendata', 'type', 'title', 'fulladdress', 'address', 'region', 'province', 'city', 'zipcode', 'lat', 'lng', 'image_url', 'services');",
+                  "  }",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -755,7 +762,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/pois/list?lat={{lat}}&lon={{lon}}",
+              "raw": "{{baseUrl}}/api/v1/pois/list?lat={{lat}}&lng={{lng}}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -771,8 +778,8 @@
                   "value": "{{lat}}"
                 },
                 {
-                  "key": "lon",
-                  "value": "{{lon}}"
+                  "key": "lng",
+                  "value": "{{lng}}"
                 }
               ]
             }
@@ -914,7 +921,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"lat\": 45.464211,\n  \"lon\": 9.191383,\n  \"name\": \"Nuovo luogo mock\",\n  \"category\": 1,\n  \"descr\": \"Descrizione proposta dal client.\",\n  \"picture\": \"https://picsum.photos/seed/lm-new-poi/1200/900\"\n}"
+              "raw": "{\n  \"lat\": 45.464211,\n  \"lng\": 9.191383,\n  \"title\": \"Nuovo luogo mock\",\n  \"category\": 1,\n  \"descr\": \"Descrizione proposta dal client.\",\n  \"image_url\": \"https://picsum.photos/seed/lm-new-poi/1200/900\"\n}"
             }
           },
           "response": []
@@ -932,6 +939,10 @@
                   "pm.test('response is json', function () {",
                   "  pm.response.to.be.withBody;",
                   "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test('POI has culturalSites-compatible fields', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json).to.include.keys('id', 'id_opendata', 'type', 'title', 'fulladdress', 'address', 'region', 'province', 'city', 'zipcode', 'lat', 'lng', 'image_url', 'services');",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -975,6 +986,10 @@
                   "pm.test('response is json', function () {",
                   "  pm.response.to.be.withBody;",
                   "  pm.expect(function () { pm.response.json(); }).not.to.throw();",
+                  "});",
+                  "pm.test('POI has culturalSites-compatible fields', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json).to.include.keys('id', 'id_opendata', 'type', 'title', 'fulladdress', 'address', 'region', 'province', 'city', 'zipcode', 'lat', 'lng', 'image_url', 'services');",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -1835,7 +1850,7 @@
           "  pm.collectionVariables.set('newPassword', 'newPassword123');",
           "}",
           "if (!pm.collectionVariables.get('lat')) { pm.collectionVariables.set('lat', '45.4642'); }",
-          "if (!pm.collectionVariables.get('lon')) { pm.collectionVariables.set('lon', '9.1900'); }",
+          "if (!pm.collectionVariables.get('lng')) { pm.collectionVariables.set('lng', '9.1900'); }",
           "if (!pm.collectionVariables.get('currentUserId')) { pm.collectionVariables.set('currentUserId', '1'); }"
         ],
         "type": "text/javascript"
@@ -1919,7 +1934,7 @@
       "type": "string"
     },
     {
-      "key": "lon",
+      "key": "lng",
       "value": "9.1900",
       "type": "string"
     },
